@@ -11,8 +11,6 @@ import static javafx.scene.input.KeyCode.D;
 import static javafx.scene.input.KeyCode.SPACE;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Controller class of the MainApp's UI.
@@ -21,7 +19,6 @@ import org.slf4j.LoggerFactory;
  */
 public class FXMLMainAppController {
 
-    private final static Logger logger = LoggerFactory.getLogger(FXMLMainAppController.class);
     @FXML
     private Pane animationPanel;
     private double elapsedTime = 0;
@@ -29,24 +26,28 @@ public class FXMLMainAppController {
     private Scene scene;
     AnimationTimer animation;
 
+    private boolean leftPressed = false;
+    private boolean rightPressed = false;
+
     @FXML
     public void initialize() {
-        logger.info("Initializing MainAppController...");
         spaceShip = new Sprite(300, 750, 40, 40, "player", Color.BLUE);
     }
+
     public void initGameComponents() {
         createContent();
         this.scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
-                case A:
-                    spaceShip.moveLeft();
-                    break;
-                case D:
-                    spaceShip.moveRight();
-                    break;
-                case SPACE:
-                    shoot(spaceShip);
-                    break;
+                case A -> leftPressed = true;
+                case D -> rightPressed = true;
+                case SPACE -> shoot(spaceShip);
+            }
+        });
+
+        this.scene.setOnKeyReleased(e -> {
+            switch (e.getCode()) {
+                case A -> leftPressed = false;
+                case D -> rightPressed = false;
             }
         });
     }
@@ -54,8 +55,8 @@ public class FXMLMainAppController {
     private void createContent() {
         animationPanel.setPrefSize(600, 800);
         animationPanel.getChildren().add(spaceShip);
-        //-- Create the game loop.
-        animation= new AnimationTimer() {
+        // Create the game loop.
+        animation = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 update();
@@ -79,6 +80,10 @@ public class FXMLMainAppController {
 
     private void update() {
         elapsedTime += 0.016;
+
+        // Move player every time timer is updated
+        if (leftPressed) spaceShip.moveLeft();
+        if (rightPressed) spaceShip.moveRight();
 
         sprites().forEach(sprite -> {
             switch (sprite.getType()) {

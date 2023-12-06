@@ -20,20 +20,18 @@ import org.slf4j.LoggerFactory;
  */
 public class SpaceInvadersApp extends Application {
 
-    private final static Logger logger = LoggerFactory.getLogger(SpaceInvadersApp.class);
     FXMLMainAppController controller;
 
     @Override
     public void start(Stage primaryStage) {
         try {
-            logger.info("Bootstrapping the application...");
-            //-- 1) Load the scene graph from the specified FXML file and 
-            // associate it with its FXML controller.
+            // Load scene graph from the specified FXML file and associate it with controller
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/MainApp_layout.fxml"));
             controller = new FXMLMainAppController();
             loader.setController(controller);
             Pane root = loader.load();
-            //-- 2) Create and set the scene to the stage.
+
+            // Create and set the scene to the stage.
             Scene scene = new Scene(root, 1000, 1000);
             controller.setScene(scene);
             controller.initGameComponents();
@@ -43,7 +41,7 @@ public class SpaceInvadersApp extends Application {
             primaryStage.setAlwaysOnTop(true);
             primaryStage.show();
         } catch (IOException ex) {
-            logger.error(ex.getMessage(), ex);
+            System.err.println(ex.getMessage());
         }
     }
 
