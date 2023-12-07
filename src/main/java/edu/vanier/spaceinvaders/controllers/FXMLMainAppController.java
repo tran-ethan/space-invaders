@@ -31,9 +31,12 @@ public class FXMLMainAppController {
     private boolean leftPressed = false;
     private boolean rightPressed = false;
 
+    private int invaderCount;
+    private boolean gameOver = false;
+
     @FXML
     public void initialize() {
-        spaceShip = new Sprite(300, 750, 40, 40, "player", Color.BLUE);
+        spaceShip = new Sprite(500, 750, 40, 40, "player", Color.BLUE);
     }
 
     public void initGameComponents() {
@@ -76,8 +79,9 @@ public class FXMLMainAppController {
         for (int j = 0; j < 3; j++) {
             for (int i = 0; i < 5; i++) {
                 Sprite invader = new Sprite(90 + i * 100, 150+j*50, 30, 30, "enemy", Color.RED);
-
                 animationPanel.getChildren().add(invader);
+
+                invaderCount++;
             }
         }
     }
@@ -112,6 +116,7 @@ public class FXMLMainAppController {
                     if (sprite.getBoundsInParent().intersects(spaceShip.getBoundsInParent())) {
                         spaceShip.setDead(true);
                         sprite.setDead(true);
+                        gameOver = true;
                     }
                     break;
 
@@ -122,6 +127,10 @@ public class FXMLMainAppController {
                         if (sprite.getBoundsInParent().intersects(enemy.getBoundsInParent())) {
                             enemy.setDead(true);
                             sprite.setDead(true);
+                            invaderCount--;
+                            if (invaderCount <= 0) {
+                                gameOver = true;
+                            }
                         }
                     });
 
@@ -143,17 +152,10 @@ public class FXMLMainAppController {
             }
         });
 
-        // Count enemies alive
-        int enemiesAlive = 0;
-        for (Sprite sprite: sprites()) {
-            if (!sprite.isDead() && sprite.getType().equals("enemy")) {
-                enemiesAlive++;
-            }
-        }
-
-        if (enemiesAlive == 0) {
+        // Check if game is over
+        if (gameOver) {
             System.out.println("GAME OVER");
-            animation.stop();
+            stopAnimation();
         }
 
         animationPanel.getChildren().removeIf(n -> {
