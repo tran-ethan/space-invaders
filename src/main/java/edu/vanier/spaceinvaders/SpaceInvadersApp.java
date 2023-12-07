@@ -7,13 +7,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * This is a JavaFX project template to be used for creating GUI applications.
- * The JavaFX GUI framework (version: 20.0.2) is linked to this project in the
- * build.gradle file.
  *
  * @author Ethan Tran
  * @author Zachary Tremblay
@@ -32,7 +27,7 @@ public class SpaceInvadersApp extends Application {
             Pane root = loader.load();
 
             // Create and set the scene to the stage.
-            Scene scene = new Scene(root, 1000, 1000);
+            Scene scene = new Scene(root);
             controller.setScene(scene);
             controller.initGameComponents();
             primaryStage.setScene(scene);

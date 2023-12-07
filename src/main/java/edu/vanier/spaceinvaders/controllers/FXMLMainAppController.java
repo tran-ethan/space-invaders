@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import static javafx.scene.input.KeyCode.A;
 import static javafx.scene.input.KeyCode.D;
 import static javafx.scene.input.KeyCode.SPACE;
@@ -22,6 +23,12 @@ public class FXMLMainAppController {
 
     @FXML
     private Pane animationPanel;
+    @FXML
+    private Button gameOverButton;
+    @FXML
+    private Text gameOverText;
+
+
     private double elapsedTime = 0;
     private Sprite spaceShip;
     private Scene scene;
@@ -37,6 +44,8 @@ public class FXMLMainAppController {
 
     @FXML
     public void initialize() {
+        gameOverButton.setOnAction(e -> nextLevel());
+
         spaceShip = new Sprite(500, 750, 40, 40, "player", Color.BLUE);
     }
 
@@ -63,9 +72,8 @@ public class FXMLMainAppController {
     }
 
     private void createContent() {
-        animationPanel.setPrefSize(600, 800);
-        animationPanel.getChildren().add(spaceShip);
-        // Create the game loop.
+
+        // Create the game loop
         animation = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -77,6 +85,12 @@ public class FXMLMainAppController {
     }
 
     private void nextLevel() {
+        // Remove overlay text and button
+        gameOverText.setVisible(false);
+        gameOverButton.setVisible(false);
+
+        animationPanel.getChildren().add(spaceShip);
+
         for (int j = 0; j < 3; j++) {
             for (int i = 0; i < 5; i++) {
                 Sprite invader = new Sprite(90 + i * 100, 150+j*50, 30, 30, "enemy", Color.RED);
@@ -95,6 +109,71 @@ public class FXMLMainAppController {
         elapsedTime += 0.016;
 
         // Move player every time timer is updated
+        moveSpaceship();
+
+        sprites().forEach(sprite -> {
+            switch (sprite.getType()) {
+                case "enemyBullet" -> {
+                    sprite.moveDown();
+                    if (sprite.getBoundsInParent().intersects(spaceShip.getBoundsInParent())) {
+                        spaceShip.setDead(true);
+                        sprite.setDead(true);
+                        gameOver = true;
+                    }
+                }
+                case "playerBullet" -> {
+                    sprite.moveUp();
+                    sprites().stream().filter(e -> e.getType().equals("enemy")).forEach(enemy -> {
+                        if (sprite.getBoundsInParent().intersects(enemy.getBoundsInParent())) {
+                            enemy.setDead(true);
+                            sprite.setDead(true);
+                            if (--invaderCount <= 0) {
+                                gameOver = true;
+                            }
+                        }
+                    });
+                }
+                case "enemy" -> {
+                    if (elapsedTime > 2) {
+                        // Random probability of shooting and only shoot if entity is alive
+                        if (!sprite.isDead()) {
+                            if (Math.random() < 0.3) {
+                                shoot(sprite);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Remove dead entities
+        animationPanel.getChildren().removeIf(n -> {
+            try {
+                Sprite sprite = (Sprite) n;
+                return sprite.isDead();
+            } catch (Exception e) {
+                return false;
+            }
+        });
+
+        // Check if game is over
+        if (gameOver) {
+            gameOverText.setVisible(true);
+            gameOverButton.setVisible(true);
+            stopAnimation();
+        }
+
+        if (elapsedTime > 2) {
+            elapsedTime = 0;
+        }
+    }
+
+    private void shoot(Sprite who) {
+        Sprite s = new Sprite((int) who.getTranslateX() + 20, (int) who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.RED);
+        animationPanel.getChildren().add(s);
+    }
+
+    private void moveSpaceship() {
         if (leftPressed) {
             spaceShip.moveLeft();
         }
@@ -107,82 +186,6 @@ public class FXMLMainAppController {
         if (downPressed) {
             spaceShip.moveDown();
         }
-
-        sprites().forEach(sprite -> {
-            switch (sprite.getType()) {
-
-                case "enemyBullet":
-                    sprite.moveDown();
-
-                    if (sprite.getBoundsInParent().intersects(spaceShip.getBoundsInParent())) {
-                        spaceShip.setDead(true);
-                        sprite.setDead(true);
-                        gameOver = true;
-                    }
-                    break;
-
-                case "playerBullet":
-                    sprite.moveUp();
-
-                    sprites().stream().filter(e -> e.getType().equals("enemy")).forEach(enemy -> {
-                        if (sprite.getBoundsInParent().intersects(enemy.getBoundsInParent())) {
-                            enemy.setDead(true);
-                            sprite.setDead(true);
-                            invaderCount--;
-                            if (invaderCount <= 0) {
-                                gameOver = true;
-                            }
-                        }
-                    });
-
-                    break;
-
-                case "enemy":
-
-                    if (elapsedTime > 2) {
-                        // Random probability of shooting and only shoot if entity is alive
-                        if (!sprite.isDead()) {
-                            if (Math.random() < 0.3) {
-                                shoot(sprite);
-                            }
-
-                        }
-                    }
-
-                    break;
-            }
-        });
-
-        // Check if game is over
-        if (gameOver) {
-            System.out.println("GAME OVER");
-            Text text = new Text("GAME OVER");
-            text.setX(500);
-            text.setY(500);
-            text.setFill(Color.WHEAT);
-            text.setScaleX(4);
-            text.setScaleY(4);
-            animationPanel.getChildren().add(text);
-            stopAnimation();
-        }
-
-        animationPanel.getChildren().removeIf(n -> {
-            try {
-                Sprite sprite = (Sprite) n;
-                return sprite.isDead();
-            } catch (Exception e) {
-                return false;
-            }
-        });
-
-        if (elapsedTime > 2) {
-            elapsedTime = 0;
-        }
-    }
-
-    private void shoot(Sprite who) {
-        Sprite s = new Sprite((int) who.getTranslateX() + 20, (int) who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.RED);
-        animationPanel.getChildren().add(s);
     }
 
     public void setScene(Scene scene) {
