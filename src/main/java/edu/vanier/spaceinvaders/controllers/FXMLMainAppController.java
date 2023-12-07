@@ -26,6 +26,8 @@ public class FXMLMainAppController {
     private Scene scene;
     AnimationTimer animation;
 
+    private boolean upPressed = false;
+    private boolean downPressed = false;
     private boolean leftPressed = false;
     private boolean rightPressed = false;
 
@@ -38,21 +40,20 @@ public class FXMLMainAppController {
         createContent();
         this.scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
-                case A ->
-                    leftPressed = true;
-                case D ->
-                    rightPressed = true;
-                case SPACE ->
-                    shoot(spaceShip);
+                case W -> upPressed = true;
+                case A -> leftPressed = true;
+                case S -> downPressed = true;
+                case D -> rightPressed = true;
+                case SPACE -> shoot(spaceShip);
             }
         });
 
         this.scene.setOnKeyReleased(e -> {
             switch (e.getCode()) {
-                case A ->
-                    leftPressed = false;
-                case D ->
-                    rightPressed = false;
+                case W -> upPressed = false;
+                case A -> leftPressed = false;
+                case S -> downPressed = false;
+                case D -> rightPressed = false;
             }
         });
     }
@@ -95,6 +96,12 @@ public class FXMLMainAppController {
         if (rightPressed) {
             spaceShip.moveRight();
         }
+        if (upPressed) {
+            spaceShip.moveUp();
+        }
+        if (downPressed) {
+            spaceShip.moveDown();
+        }
 
         sprites().forEach(sprite -> {
             switch (sprite.getType()) {
@@ -123,14 +130,31 @@ public class FXMLMainAppController {
                 case "enemy":
 
                     if (elapsedTime > 2) {
-                        if (Math.random() < 0.3) {
-                            shoot(sprite);
+                        // Random probability of shooting and only shoot if entity is alive
+                        if (!sprite.isDead()) {
+                            if (Math.random() < 0.3) {
+                                shoot(sprite);
+                            }
+
                         }
                     }
 
                     break;
             }
         });
+
+        // Count enemies alive
+        int enemiesAlive = 0;
+        for (Sprite sprite: sprites()) {
+            if (!sprite.isDead() && sprite.getType().equals("enemy")) {
+                enemiesAlive++;
+            }
+        }
+
+        if (enemiesAlive == 0) {
+            System.out.println("GAME OVER");
+            animation.stop();
+        }
 
         animationPanel.getChildren().removeIf(n -> {
             Sprite sprite = (Sprite) n;
