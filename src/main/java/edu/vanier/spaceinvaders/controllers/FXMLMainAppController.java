@@ -38,16 +38,21 @@ public class FXMLMainAppController {
         createContent();
         this.scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
-                case A -> leftPressed = true;
-                case D -> rightPressed = true;
-                case SPACE -> shoot(spaceShip);
+                case A ->
+                    leftPressed = true;
+                case D ->
+                    rightPressed = true;
+                case SPACE ->
+                    shoot(spaceShip);
             }
         });
 
         this.scene.setOnKeyReleased(e -> {
             switch (e.getCode()) {
-                case A -> leftPressed = false;
-                case D -> rightPressed = false;
+                case A ->
+                    leftPressed = false;
+                case D ->
+                    rightPressed = false;
             }
         });
     }
@@ -63,14 +68,16 @@ public class FXMLMainAppController {
             }
         };
         animation.start();
-        nextLevel();        
+        nextLevel();
     }
 
     private void nextLevel() {
-        for (int i = 0; i < 5; i++) {
-            Sprite invader = new Sprite(90 + i * 100, 150, 30, 30, "enemy", Color.RED);
+        for (int j = 0; j < 3; j++) {
+            for (int i = 0; i < 5; i++) {
+                Sprite invader = new Sprite(90 + i * 100, 150+j*50, 30, 30, "enemy", Color.RED);
 
-            animationPanel.getChildren().add(invader);
+                animationPanel.getChildren().add(invader);
+            }
         }
     }
 
@@ -82,8 +89,12 @@ public class FXMLMainAppController {
         elapsedTime += 0.016;
 
         // Move player every time timer is updated
-        if (leftPressed) spaceShip.moveLeft();
-        if (rightPressed) spaceShip.moveRight();
+        if (leftPressed) {
+            spaceShip.moveLeft();
+        }
+        if (rightPressed) {
+            spaceShip.moveRight();
+        }
 
         sprites().forEach(sprite -> {
             switch (sprite.getType()) {
@@ -138,7 +149,7 @@ public class FXMLMainAppController {
 
     public void setScene(Scene scene) {
         this.scene = scene;
-    }    
+    }
 
     public void stopAnimation() {
         if (animation != null) {
