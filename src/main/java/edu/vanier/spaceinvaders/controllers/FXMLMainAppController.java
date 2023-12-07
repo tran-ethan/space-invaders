@@ -11,6 +11,7 @@ import static javafx.scene.input.KeyCode.D;
 import static javafx.scene.input.KeyCode.SPACE;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
 /**
  * Controller class of the MainApp's UI.
@@ -110,7 +111,7 @@ public class FXMLMainAppController {
         sprites().forEach(sprite -> {
             switch (sprite.getType()) {
 
-                case "enemybullet":
+                case "enemyBullet":
                     sprite.moveDown();
 
                     if (sprite.getBoundsInParent().intersects(spaceShip.getBoundsInParent())) {
@@ -120,7 +121,7 @@ public class FXMLMainAppController {
                     }
                     break;
 
-                case "playerbullet":
+                case "playerBullet":
                     sprite.moveUp();
 
                     sprites().stream().filter(e -> e.getType().equals("enemy")).forEach(enemy -> {
@@ -155,12 +156,20 @@ public class FXMLMainAppController {
         // Check if game is over
         if (gameOver) {
             System.out.println("GAME OVER");
+            Text text = new Text("GAME OVER");
+            text.setX(500);
+            text.setY(500);
+            animationPanel.getChildren().add(text);
             stopAnimation();
         }
 
         animationPanel.getChildren().removeIf(n -> {
-            Sprite sprite = (Sprite) n;
-            return sprite.isDead();
+            try {
+                Sprite sprite = (Sprite) n;
+                return sprite.isDead();
+            } catch (Exception e) {
+                return false;
+            }
         });
 
         if (elapsedTime > 2) {
@@ -169,7 +178,7 @@ public class FXMLMainAppController {
     }
 
     private void shoot(Sprite who) {
-        Sprite s = new Sprite((int) who.getTranslateX() + 20, (int) who.getTranslateY(), 5, 20, who.getType() + "bullet", Color.BLACK);
+        Sprite s = new Sprite((int) who.getTranslateX() + 20, (int) who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.BLACK);
         animationPanel.getChildren().add(s);
     }
 
