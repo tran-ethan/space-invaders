@@ -88,7 +88,7 @@ public class FXMLMainAppController {
     }
 
     private List<Sprite> sprites() {
-        return animationPanel.getChildren().stream().map(n -> (Sprite) n).collect(Collectors.toList());
+        return animationPanel.getChildren().stream().filter(n -> n instanceof Sprite).map(n -> (Sprite) n).collect(Collectors.toList());
     }
 
     private void update() {
@@ -159,6 +159,9 @@ public class FXMLMainAppController {
             Text text = new Text("GAME OVER");
             text.setX(500);
             text.setY(500);
+            text.setFill(Color.WHEAT);
+            text.setScaleX(4);
+            text.setScaleY(4);
             animationPanel.getChildren().add(text);
             stopAnimation();
         }
@@ -178,7 +181,7 @@ public class FXMLMainAppController {
     }
 
     private void shoot(Sprite who) {
-        Sprite s = new Sprite((int) who.getTranslateX() + 20, (int) who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.BLACK);
+        Sprite s = new Sprite((int) who.getTranslateX() + 20, (int) who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.RED);
         animationPanel.getChildren().add(s);
     }
 
