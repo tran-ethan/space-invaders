@@ -34,6 +34,9 @@ public class FXMLMainAppController {
     private Scene scene;
     AnimationTimer animation;
 
+    private final double WIDTH = 800;
+    private final double HEIGHT = 1000;
+
     private boolean upPressed = false;
     private boolean downPressed = false;
     private boolean leftPressed = false;
@@ -89,6 +92,8 @@ public class FXMLMainAppController {
         gameOverText.setVisible(false);
         gameOverButton.setVisible(false);
 
+        animationPanel.getChildren().removeIf(n -> n instanceof Sprite);
+
         animationPanel.getChildren().add(spaceShip);
 
         for (int j = 0; j < 3; j++) {
@@ -99,6 +104,10 @@ public class FXMLMainAppController {
                 invaderCount++;
             }
         }
+
+        // Set text to overlay sprites
+        gameOverText.toFront();
+        gameOverButton.toFront();
     }
 
     private List<Sprite> sprites() {
@@ -143,6 +152,15 @@ public class FXMLMainAppController {
                         }
                     }
                 }
+            }
+        });
+
+        // Remove entities if they are off-screen
+        sprites().forEach(sprite -> {
+            double x = sprite.getTranslateX();
+            double y = sprite.getTranslateY();
+            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {
+                sprite.setDead(true);
             }
         });
 
