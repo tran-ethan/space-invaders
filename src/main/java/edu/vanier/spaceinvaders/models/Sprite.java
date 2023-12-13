@@ -11,29 +11,31 @@ public class Sprite extends Rectangle {
 
     private boolean dead = false;
     private final String type;
+    private double speed;
 
-    public Sprite(int x, int y, int w, int h, String type, Color color) {
+    public Sprite(int x, int y, int w, int h, String type, Color color, double speed) {
         super(w, h, color);
 
         this.type = type;
+        this.speed = speed;
         setTranslateX(x);
         setTranslateY(y);
     }
 
     public void moveLeft() {
-        setTranslateX(getTranslateX() - 5);
+        setTranslateX(getTranslateX() - speed);
     }
 
     public void moveRight() {
-        setTranslateX(getTranslateX() + 5);
+        setTranslateX(getTranslateX() + speed);
     }
 
     public void moveUp() {
-        setTranslateY(getTranslateY() - 5);
+        setTranslateY(getTranslateY() - speed);
     }
 
     public void moveDown() {
-        setTranslateY(getTranslateY() + 5);
+        setTranslateY(getTranslateY() + speed);
     }
 
     public boolean isDead() {

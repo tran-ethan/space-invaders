@@ -51,6 +51,7 @@ public class FXMLMainAppController {
     private boolean rightPressed = false;
 
     private int invaderCount;
+    private boolean movingRight = true;
     private boolean gameOver = false;
     private static int lives = 3;
     private static int level = 1;
@@ -61,7 +62,7 @@ public class FXMLMainAppController {
     public void initialize() {
         gameOverButton.setOnAction(e -> nextLevel());
 
-        spaceShip = new Sprite(500, 750, 40, 40, "player", Color.BLUE);
+        spaceShip = new Sprite(500, 750, 40, 40, "player", Color.BLUE, 5);
 
     }
 
@@ -79,7 +80,7 @@ public class FXMLMainAppController {
                     rightPressed = true;
                 case SPACE -> {
                     shoot(spaceShip);
-                    Media sound = new Media(getClass().getResource("/sounds/laser" + Integer.toString(level) + ".wav").toExternalForm());
+                    Media sound = new Media(getClass().getResource("/sounds/laser" + level + ".wav").toExternalForm());
                     MediaPlayer mediaPlayer = new MediaPlayer(sound);
                     mediaPlayer.play();
 
@@ -126,7 +127,7 @@ public class FXMLMainAppController {
 
         for (int j = 0; j < level + 2; j++) {
             for (int i = 0; i < 5; i++) {
-                Sprite invader = new Sprite(90 + i * 100, 150 + j * 50, 30, 30, "enemy", Color.RED);
+                Sprite invader = new Sprite(90 + i * 100, 150 + j * 50, 30, 30, "enemy", Color.RED, 1);
                 animationPanel.getChildren().add(invader);
 
                 invaderCount++;
@@ -147,6 +148,19 @@ public class FXMLMainAppController {
 
         // Move player every time timer is updated
         moveSpaceship();
+
+        // Determine movement direction of all enemies
+        sprites().stream().filter(sprite -> sprite.getType().equals("enemy")).forEach(sprite -> {
+            if (sprite.getTranslateX() > WIDTH - 100) {
+                System.out.println("wall hit");
+                movingRight = false;
+            }
+            if (sprite.getTranslateX() < 70) {
+                System.out.println("wall hit");
+                movingRight = true;
+            }
+        });
+
 
         sprites().forEach(sprite -> {
             switch (sprite.getType()) {
@@ -197,15 +211,19 @@ public class FXMLMainAppController {
                             }
                         }
                     }
+                    if (movingRight) {
+                        sprite.moveRight();
+                    } else {
+                        sprite.moveLeft();
+                    }
                 }
             }
         });
 
         // Remove entities if they are off-screen
         sprites().forEach(sprite -> {
-            double x = sprite.getTranslateX();
             double y = sprite.getTranslateY();
-            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {
+            if (y < 0 || y > HEIGHT) {
                 sprite.setDead(true);
             }
         });
@@ -233,9 +251,8 @@ public class FXMLMainAppController {
     }
 
     private void shoot(Sprite who) {
-        Sprite s = new Sprite((int) who.getTranslateX() + 20, (int) who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.RED);
+        Sprite s = new Sprite((int) who.getTranslateX() + 20, (int) who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.RED, 5);
         animationPanel.getChildren().add(s);
-
     }
 
     private void moveSpaceship() {
