@@ -150,19 +150,19 @@ public class FXMLMainAppController {
         moveSpaceship();
 
         // Determine movement direction of all enemies
-        sprites().stream().filter(sprite -> sprite.getType().equals("enemy")).forEach(sprite -> {
+        boolean movingDown = false;
+        for (Sprite sprite: sprites().stream().filter(sprite -> sprite.getType().equals("enemy")).toList()) {
             if (sprite.getTranslateX() > WIDTH - 100) {
-                System.out.println("wall hit");
                 movingRight = false;
+                movingDown = true;
             }
             if (sprite.getTranslateX() < 70) {
-                System.out.println("wall hit");
                 movingRight = true;
+                movingDown = true;
             }
-        });
+        }
 
-
-        sprites().forEach(sprite -> {
+        for (Sprite sprite: sprites()) {
             switch (sprite.getType()) {
                 case "enemyBullet" -> {
                     sprite.moveDown();
@@ -211,14 +211,21 @@ public class FXMLMainAppController {
                             }
                         }
                     }
+                    // Move all enemies right or left depending on direction
                     if (movingRight) {
                         sprite.moveRight();
                     } else {
                         sprite.moveLeft();
                     }
+                    // Move down if there is change in direction (wall is hit)
+                    if (movingDown) {
+                        for (int i = 0; i < 15; i++) {
+                            sprite.moveDown();
+                        }
+                    }
                 }
             }
-        });
+        }
 
         // Remove entities if they are off-screen
         sprites().forEach(sprite -> {
