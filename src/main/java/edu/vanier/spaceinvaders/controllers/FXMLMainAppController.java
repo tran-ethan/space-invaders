@@ -8,10 +8,13 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 
 /**
@@ -53,6 +56,9 @@ public class FXMLMainAppController {
     private static int lives = 3;
     private static int level = 1;
     private static int score = 0;
+
+    private MediaPlayer shootAudio;
+    private MediaPlayer explosionAudio;
 
     /**
      * Cool-down between shots that user can fire
@@ -133,7 +139,7 @@ public class FXMLMainAppController {
         invaderCount = 0;
         gameOver = false;
 
-        //reset labels
+        // Reset labels
         levelLabel.setText(Integer.toString(level));
         scoreLabel.setText(Integer.toString(score));
         livesLabel.setText(Integer.toString(lives));
@@ -144,19 +150,37 @@ public class FXMLMainAppController {
 
         animationPanel.getChildren().removeIf(n -> n instanceof Sprite);
 
-        spaceShip = new Sprite(500, 750, 40, 40, "player", Color.BLUE, 5);
+        ImagePattern image = new ImagePattern(new Image(String.format("/images/ship%d.png", level)));
+
+        spaceShip = new Sprite(500, 750, 40, 40, "player", image, 5);
         animationPanel.getChildren().add(spaceShip);
 
+        // Spawn enemies according to level
         for (int j = 0; j < level + 2; j++) {
             for (int i = 0; i < 5; i++) {
-                Sprite invader = new Sprite(90 + i * 100, 150 + j * 50, 30, 30, "enemy", Color.RED, level);
+                ImagePattern enemy = new ImagePattern(new Image(String.format("/images/intruder%d.png", 1 + (int) (Math.random() * 5))));
+
+                Sprite invader = new Sprite(90 + i * 100, 150 + j * 50, 30, 30, "enemy", enemy, level);
                 animationPanel.getChildren().add(invader);
 
                 invaderCount++;
             }
         }
 
+        // Prevent continual shooting after level reset
+        isShooting = false;
+
         animation.start();
+
+        // Set media for shooting sounds
+        Media shootSound = new Media(getClass().getResource("/sounds/laser" + level + ".wav").toExternalForm());
+        shootAudio = new MediaPlayer(shootSound);
+        shootAudio.setVolume(0.2);
+
+        // Set media for explosion sounds
+        Media explosionSound = new Media(getClass().getResource("/sounds/explosion.wav").toExternalForm());
+        explosionAudio = new MediaPlayer(explosionSound);
+        explosionAudio.setVolume(0.1);
 
         // Set text to overlay sprites
         gameOverText.toFront();
@@ -199,11 +223,8 @@ public class FXMLMainAppController {
                             gameOver = true;
                         }
                         sprite.setDead(true);
-                        Media sound = new Media(getClass().getResource("/sounds/explosion.wav").toExternalForm());
-                        MediaPlayer mediaPlayer = new MediaPlayer(sound);
-                        mediaPlayer.setVolume(0.5);
-                        mediaPlayer.play();
-
+                        explosionAudio.play();
+                        explosionAudio.seek(explosionAudio.getStartTime());
                     }
                 }
                 case "playerBullet" -> {
@@ -221,10 +242,8 @@ public class FXMLMainAppController {
                                 levelLabel.setText(Integer.toString(level));
                                 nextLevel();
                             }
-                            Media sound = new Media(getClass().getResource("/sounds/explosion.wav").toExternalForm());
-                            MediaPlayer mediaPlayer = new MediaPlayer(sound);
-                            mediaPlayer.setVolume(0.5);
-                            mediaPlayer.play();
+                            explosionAudio.play();
+                            explosionAudio.seek(explosionAudio.getStartTime());
                         }
                     });
                 }
@@ -240,10 +259,8 @@ public class FXMLMainAppController {
                     if (sprite.getBoundsInParent().intersects(spaceShip.getBoundsInParent())) {
                         lives = 0;
                         livesLabel.setText(Integer.toString(lives));
-                        Media sound = new Media(getClass().getResource("/sounds/explosion.wav").toExternalForm());
-                        MediaPlayer mediaPlayer = new MediaPlayer(sound);
-                        mediaPlayer.setVolume(0.5);
-                        mediaPlayer.play();
+                        explosionAudio.play();
+                        explosionAudio.seek(explosionAudio.getStartTime());
                         gameOver = true;
                     }
                     // Move all enemies right or left depending on direction
@@ -288,7 +305,6 @@ public class FXMLMainAppController {
             level = 1;
             score = 0;
             lives = 3;
-
         }
 
         // Reset timer for enemies shooting
@@ -301,25 +317,23 @@ public class FXMLMainAppController {
         Sprite s = new Sprite((int) who.getTranslateX() + 20, (int) who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.RED, 5);
         animationPanel.getChildren().add(s);
         if (who == spaceShip) {
-            Media sound = new Media(getClass().getResource("/sounds/laser" + level + ".wav").toExternalForm());
-            MediaPlayer mediaPlayer = new MediaPlayer(sound);
-            mediaPlayer.setVolume(0.5);
-            mediaPlayer.play();
+            shootAudio.play();
+            shootAudio.seek(shootAudio.getStartTime());
         }
     }
 
     private void updateSpaceShip() {
         // Moves spaceship depending on which keys are pressed
-        if (leftPressed) {
+        if (leftPressed && spaceShip.getTranslateX() > 0) {
             spaceShip.moveLeft();
         }
-        if (rightPressed) {
+        if (rightPressed && spaceShip.getTranslateX() <= WIDTH - 40) {
             spaceShip.moveRight();
         }
-        if (upPressed) {
+        if (upPressed && spaceShip.getTranslateY() > 96) {
             spaceShip.moveUp();
         }
-        if (downPressed) {
+        if (downPressed && spaceShip.getTranslateY() < HEIGHT - 40) {
             spaceShip.moveDown();
         }
 
