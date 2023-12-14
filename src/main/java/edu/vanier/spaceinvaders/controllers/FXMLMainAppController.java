@@ -68,7 +68,6 @@ public class FXMLMainAppController {
      * Represents whether the spaceship is currently shooting or not
      */
     private boolean isShooting = false;
-    
 
     @FXML
     public void initialize() {
@@ -80,10 +79,14 @@ public class FXMLMainAppController {
         // Define keybindings for spaceship movements
         this.scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
-                case W -> upPressed = true;
-                case A -> leftPressed = true;
-                case S -> downPressed = true;
-                case D -> rightPressed = true;
+                case W ->
+                    upPressed = true;
+                case A ->
+                    leftPressed = true;
+                case S ->
+                    downPressed = true;
+                case D ->
+                    rightPressed = true;
                 case SPACE -> {
                     long currentTime = System.currentTimeMillis();
                     // Only shoot if elapsed time since last shoot is greater or equal to cooldown
@@ -99,11 +102,16 @@ public class FXMLMainAppController {
         // Release movement for spaceship
         this.scene.setOnKeyReleased(e -> {
             switch (e.getCode()) {
-                case W -> upPressed = false;
-                case A -> leftPressed = false;
-                case S -> downPressed = false;
-                case D -> rightPressed = false;
-                case SPACE -> isShooting = false;
+                case W ->
+                    upPressed = false;
+                case A ->
+                    leftPressed = false;
+                case S ->
+                    downPressed = false;
+                case D ->
+                    rightPressed = false;
+                case SPACE ->
+                    isShooting = false;
             }
         });
     }
@@ -125,6 +133,11 @@ public class FXMLMainAppController {
         invaderCount = 0;
         gameOver = false;
 
+        //reset labels
+        levelLabel.setText(Integer.toString(level));
+        scoreLabel.setText(Integer.toString(score));
+        livesLabel.setText(Integer.toString(lives));
+
         // Remove overlay text and button
         gameOverText.setVisible(false);
         gameOverButton.setVisible(false);
@@ -136,7 +149,7 @@ public class FXMLMainAppController {
 
         for (int j = 0; j < level + 2; j++) {
             for (int i = 0; i < 5; i++) {
-                Sprite invader = new Sprite(90 + i * 100, 150 + j * 50, 30, 30, "enemy", Color.RED, 1);
+                Sprite invader = new Sprite(90 + i * 100, 150 + j * 50, 30, 30, "enemy", Color.RED, level);
                 animationPanel.getChildren().add(invader);
 
                 invaderCount++;
@@ -162,7 +175,7 @@ public class FXMLMainAppController {
 
         // Determine movement direction of all enemies
         boolean movingDown = false;
-        for (Sprite sprite: sprites().stream().filter(sprite -> sprite.getType().equals("enemy")).toList()) {
+        for (Sprite sprite : sprites().stream().filter(sprite -> sprite.getType().equals("enemy")).toList()) {
             if (sprite.getTranslateX() > WIDTH - 100) {
                 movingRight = false;
                 movingDown = true;
@@ -175,7 +188,7 @@ public class FXMLMainAppController {
             }
         }
 
-        for (Sprite sprite: sprites()) {
+        for (Sprite sprite : sprites()) {
             switch (sprite.getType()) {
                 case "enemyBullet" -> {
                     sprite.moveDown();
@@ -188,6 +201,7 @@ public class FXMLMainAppController {
                         sprite.setDead(true);
                         Media sound = new Media(getClass().getResource("/sounds/explosion.wav").toExternalForm());
                         MediaPlayer mediaPlayer = new MediaPlayer(sound);
+                        mediaPlayer.setVolume(0.5);
                         mediaPlayer.play();
 
                     }
@@ -209,6 +223,7 @@ public class FXMLMainAppController {
                             }
                             Media sound = new Media(getClass().getResource("/sounds/explosion.wav").toExternalForm());
                             MediaPlayer mediaPlayer = new MediaPlayer(sound);
+                            mediaPlayer.setVolume(0.5);
                             mediaPlayer.play();
                         }
                     });
@@ -221,6 +236,15 @@ public class FXMLMainAppController {
                                 shoot(sprite);
                             }
                         }
+                    }
+                    if (sprite.getBoundsInParent().intersects(spaceShip.getBoundsInParent())) {
+                        lives = 0;
+                        livesLabel.setText(Integer.toString(lives));
+                        Media sound = new Media(getClass().getResource("/sounds/explosion.wav").toExternalForm());
+                        MediaPlayer mediaPlayer = new MediaPlayer(sound);
+                        mediaPlayer.setVolume(0.5);
+                        mediaPlayer.play();
+                        gameOver = true;
                     }
                     // Move all enemies right or left depending on direction
                     if (movingRight) {
@@ -261,6 +285,10 @@ public class FXMLMainAppController {
             gameOverText.setVisible(true);
             gameOverButton.setVisible(true);
             stopAnimation();
+            level = 1;
+            score = 0;
+            lives = 3;
+
         }
 
         // Reset timer for enemies shooting
@@ -275,6 +303,7 @@ public class FXMLMainAppController {
         if (who == spaceShip) {
             Media sound = new Media(getClass().getResource("/sounds/laser" + level + ".wav").toExternalForm());
             MediaPlayer mediaPlayer = new MediaPlayer(sound);
+            mediaPlayer.setVolume(0.5);
             mediaPlayer.play();
         }
     }

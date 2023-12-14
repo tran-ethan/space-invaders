@@ -1,6 +1,8 @@
 package edu.vanier.spaceinvaders.models;
 
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
 /**
@@ -20,6 +22,16 @@ public class Sprite extends Rectangle {
         this.speed = speed;
         setTranslateX(x);
         setTranslateY(y);
+        
+        if(this.type.equals("player")){
+            ImagePattern player = new ImagePattern(new Image("/images/ship1.png"));
+            this.setFill(player);
+        } else if (this.type.equals("enemy")){
+            ImagePattern player = new ImagePattern(new Image("/images/intruder"+(1+(int)(Math.random()*5))+".png"));
+            this.setFill(player);
+        }
+        
+        
     }
 
     public void moveLeft() {
