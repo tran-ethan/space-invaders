@@ -73,13 +73,11 @@ public class FXMLMainAppController {
     @FXML
     public void initialize() {
         gameOverButton.setOnAction(e -> nextLevel());
-
-        spaceShip = new Sprite(500, 750, 40, 40, "player", Color.BLUE, 5);
-
     }
 
     public void initGameComponents() {
         createContent();
+        // Define keybindings for spaceship movements
         this.scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
                 case W -> upPressed = true;
@@ -88,6 +86,7 @@ public class FXMLMainAppController {
                 case D -> rightPressed = true;
                 case SPACE -> {
                     long currentTime = System.currentTimeMillis();
+                    // Only shoot if elapsed time since last shoot is greater or equal to cooldown
                     if (currentTime - lastShotTime >= COOL_DOWN) {
                         isShooting = true;
                         shoot(spaceShip);
@@ -97,6 +96,7 @@ public class FXMLMainAppController {
             }
         });
 
+        // Release movement for spaceship
         this.scene.setOnKeyReleased(e -> {
             switch (e.getCode()) {
                 case W -> upPressed = false;
@@ -117,17 +117,21 @@ public class FXMLMainAppController {
                 update();
             }
         };
-        animation.start();
         nextLevel();
     }
 
     private void nextLevel() {
+        // Reset counters
+        invaderCount = 0;
+        gameOver = false;
+
         // Remove overlay text and button
         gameOverText.setVisible(false);
         gameOverButton.setVisible(false);
 
         animationPanel.getChildren().removeIf(n -> n instanceof Sprite);
 
+        spaceShip = new Sprite(500, 750, 40, 40, "player", Color.BLUE, 5);
         animationPanel.getChildren().add(spaceShip);
 
         for (int j = 0; j < level + 2; j++) {
@@ -138,6 +142,8 @@ public class FXMLMainAppController {
                 invaderCount++;
             }
         }
+
+        animation.start();
 
         // Set text to overlay sprites
         gameOverText.toFront();
@@ -174,8 +180,7 @@ public class FXMLMainAppController {
                 case "enemyBullet" -> {
                     sprite.moveDown();
                     if (sprite.getBoundsInParent().intersects(spaceShip.getBoundsInParent())) {
-                        lives--;
-                        livesLabel.setText(Integer.toString(lives));
+                        livesLabel.setText(Integer.toString(--lives));
                         if (lives == 0) {
                             spaceShip.setDead(true);
                             gameOver = true;
@@ -201,7 +206,6 @@ public class FXMLMainAppController {
                                 level++;
                                 levelLabel.setText(Integer.toString(level));
                                 nextLevel();
-
                             }
                             Media sound = new Media(getClass().getResource("/sounds/explosion.wav").toExternalForm());
                             MediaPlayer mediaPlayer = new MediaPlayer(sound);
@@ -276,6 +280,7 @@ public class FXMLMainAppController {
     }
 
     private void updateSpaceShip() {
+        // Moves spaceship depending on which keys are pressed
         if (leftPressed) {
             spaceShip.moveLeft();
         }
@@ -289,6 +294,7 @@ public class FXMLMainAppController {
             spaceShip.moveDown();
         }
 
+        // Shoot if SPACE held down and enough time passed since last shot
         if (isShooting && System.currentTimeMillis() - lastShotTime >= COOL_DOWN) {
             shoot(spaceShip);
             lastShotTime = System.currentTimeMillis();
