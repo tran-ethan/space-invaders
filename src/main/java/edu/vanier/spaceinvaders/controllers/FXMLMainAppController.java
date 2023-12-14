@@ -60,6 +60,7 @@ public class FXMLMainAppController {
     private boolean canShoot = true; // Flag to control shooting cooldown
     private final long coolDown = 300; // Adjust this value for the desired cooldown in milliseconds
     private long lastShotTime = 0; // Timestamp of the last shot
+    private boolean shooting = false;
     
 
     @FXML
@@ -83,10 +84,11 @@ public class FXMLMainAppController {
                 case D ->
                     rightPressed = true;
                 case SPACE -> {
-                    if (canShoot) {
+                    long currentTime = System.currentTimeMillis();
+                    if (currentTime - lastShotTime >= coolDown) {
+                        shooting = true;
                         shoot(spaceShip);
-                        lastShotTime = System.currentTimeMillis();
-                        canShoot = false;
+                        lastShotTime = currentTime;
                     }
                 }
             }
@@ -102,6 +104,8 @@ public class FXMLMainAppController {
                     downPressed = false;
                 case D ->
                     rightPressed = false;
+                case SPACE ->
+                    shooting = false;
             }
         });
     }
@@ -152,10 +156,9 @@ public class FXMLMainAppController {
         // Move player every time timer is updated
         moveSpaceship();
 
-        // Check cool-down between player shooting
-        long currentTime = System.currentTimeMillis();
-        if (!canShoot && currentTime - lastShotTime >= coolDown) {
-            canShoot = true;
+        if (shooting && System.currentTimeMillis() - lastShotTime >= coolDown) {
+            shoot(spaceShip);
+            lastShotTime = System.currentTimeMillis();
         }
 
         // Determine movement direction of all enemies
@@ -164,10 +167,12 @@ public class FXMLMainAppController {
             if (sprite.getTranslateX() > WIDTH - 100) {
                 movingRight = false;
                 movingDown = true;
+                break;
             }
             if (sprite.getTranslateX() < 70) {
                 movingRight = true;
                 movingDown = true;
+                break;
             }
         }
 
