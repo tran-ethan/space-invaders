@@ -30,6 +30,7 @@ public class SpaceInvadersApp extends Application {
             Scene scene = new Scene(root);
             controller.setScene(scene);
             controller.initGameComponents();
+
             primaryStage.setScene(scene);
             primaryStage.setTitle("Space Invaders!");
             primaryStage.sizeToScene();

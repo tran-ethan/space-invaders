@@ -1,8 +1,6 @@
 package edu.vanier.spaceinvaders.controllers;
 
 import edu.vanier.spaceinvaders.models.Sprite;
-import java.util.List;
-import java.util.stream.Collectors;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -14,8 +12,10 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controller class of the MainApp's UI.
@@ -33,7 +33,7 @@ public class FXMLMainAppController {
     @FXML
     private Label livesLabel;
     @FXML
-    private Label scoreLabel;
+    private Text scoreLabel;
     @FXML
     private Label levelLabel;
 
@@ -152,7 +152,7 @@ public class FXMLMainAppController {
 
         ImagePattern image = new ImagePattern(new Image(String.format("/images/ship%d.png", level)));
 
-        spaceShip = new Sprite(500, 750, 40, 40, "player", image, 5);
+        spaceShip = new Sprite((int) (WIDTH / 2), 750, 40, 40, "player", image, 5);
         animationPanel.getChildren().add(spaceShip);
 
         // Spawn enemies according to level
@@ -231,10 +231,14 @@ public class FXMLMainAppController {
                     sprite.moveUp();
                     sprites().stream().filter(e -> e.getType().equals("enemy")).forEach(enemy -> {
                         if (sprite.getBoundsInParent().intersects(enemy.getBoundsInParent())) {
+                            // Remove bullet and enemy
                             enemy.setDead(true);
                             sprite.setDead(true);
+
+                            // Increment score
                             score += 10;
                             scoreLabel.setText(Integer.toString(score));
+
                             if (--invaderCount <= 0 && level == 3) {
                                 gameOver = true;
                             } else if (invaderCount <= 0) {
@@ -242,6 +246,8 @@ public class FXMLMainAppController {
                                 levelLabel.setText(Integer.toString(level));
                                 nextLevel();
                             }
+
+                            // Play audio
                             explosionAudio.play();
                             explosionAudio.seek(explosionAudio.getStartTime());
                         }
@@ -250,12 +256,11 @@ public class FXMLMainAppController {
                 case "enemy" -> {
                     if (elapsedTime > 2) {
                         // Random probability of shooting and only shoot if entity is alive
-                        if (!sprite.isDead()) {
-                            if (Math.random() < 0.3) {
-                                shoot(sprite);
-                            }
+                        if (Math.random() < 0.3 && !sprite.isDead()) {
+                            shoot(sprite);
                         }
                     }
+
                     if (sprite.getBoundsInParent().intersects(spaceShip.getBoundsInParent())) {
                         lives = 0;
                         livesLabel.setText(Integer.toString(lives));
@@ -263,23 +268,30 @@ public class FXMLMainAppController {
                         explosionAudio.seek(explosionAudio.getStartTime());
                         gameOver = true;
                     }
+
                     // Move all enemies right or left depending on direction
                     if (movingRight) {
                         sprite.moveRight();
                     } else {
                         sprite.moveLeft();
                     }
+
                     // Move down if there is change in direction (wall is hit)
                     if (movingDown) {
                         for (int i = 0; i < 20; i++) {
                             sprite.moveDown();
                         }
                     }
+
+                    // Game is over if enemies reach bottom of the screen
+                    if (sprite.getTranslateY() + 30 > HEIGHT) {
+                        gameOver = true;
+                    }
                 }
             }
         }
 
-        // Remove entities if they are off-screen
+        // Remove bullets if they are off-screen
         sprites().forEach(sprite -> {
             double y = sprite.getTranslateY();
             if (y < 0 || y > HEIGHT) {
@@ -293,15 +305,18 @@ public class FXMLMainAppController {
                 Sprite sprite = (Sprite) n;
                 return sprite.isDead();
             } catch (Exception e) {
+                // Do not remove non-sprite entity
                 return false;
             }
         });
 
         // Check if game is over
         if (gameOver) {
+            // Display game over text
             gameOverText.setVisible(true);
             gameOverButton.setVisible(true);
             stopAnimation();
+            // Reset counters
             level = 1;
             score = 0;
             lives = 3;
@@ -314,11 +329,18 @@ public class FXMLMainAppController {
     }
 
     private void shoot(Sprite who) {
-        Sprite s = new Sprite((int) who.getTranslateX() + 20, (int) who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.RED, 5);
-        animationPanel.getChildren().add(s);
+
+        // TODO Fix multiple bullets shots
         if (who == spaceShip) {
+            for (int i = 0; i < level; i++) {
+                Sprite s = new Sprite((int) who.getTranslateX() + 20, (int) who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.RED, 5);
+                animationPanel.getChildren().add(s);
+            }
             shootAudio.play();
             shootAudio.seek(shootAudio.getStartTime());
+        } else {
+            Sprite s = new Sprite((int) who.getTranslateX() + 20, (int) who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.RED, 5);
+            animationPanel.getChildren().add(s);
         }
     }
 

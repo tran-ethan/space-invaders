@@ -51,10 +51,10 @@
             <Font name="Impact" size="30.0" />
          </font>
       </Label>
-      <Label fx:id="scoreLabel" layoutX="385.0" layoutY="47.0" text="0" textFill="WHITE">
+      <Text fx:id="scoreLabel" fill="WHITE" layoutX="358.0" layoutY="80.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" textAlignment="CENTER" wrappingWidth="71.7626953125">
          <font>
             <Font name="Impact" size="30.0" />
          </font>
-      </Label>
+      </Text>
    </children>
 </Pane>
