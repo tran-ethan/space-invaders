@@ -56,6 +56,10 @@ public class FXMLMainAppController {
     private static int lives = 3;
     private static int level = 1;
     private static int score = 0;
+
+    private boolean canShoot = true; // Flag to control shooting cooldown
+    private final long coolDown = 300; // Adjust this value for the desired cooldown in milliseconds
+    private long lastShotTime = 0; // Timestamp of the last shot
     
 
     @FXML
@@ -79,13 +83,12 @@ public class FXMLMainAppController {
                 case D ->
                     rightPressed = true;
                 case SPACE -> {
-                    shoot(spaceShip);
-                    Media sound = new Media(getClass().getResource("/sounds/laser" + level + ".wav").toExternalForm());
-                    MediaPlayer mediaPlayer = new MediaPlayer(sound);
-                    mediaPlayer.play();
-
+                    if (canShoot) {
+                        shoot(spaceShip);
+                        lastShotTime = System.currentTimeMillis();
+                        canShoot = false;
+                    }
                 }
-
             }
         });
 
@@ -148,6 +151,12 @@ public class FXMLMainAppController {
 
         // Move player every time timer is updated
         moveSpaceship();
+
+        // Check cool-down between player shooting
+        long currentTime = System.currentTimeMillis();
+        if (!canShoot && currentTime - lastShotTime >= coolDown) {
+            canShoot = true;
+        }
 
         // Determine movement direction of all enemies
         boolean movingDown = false;
@@ -260,6 +269,11 @@ public class FXMLMainAppController {
     private void shoot(Sprite who) {
         Sprite s = new Sprite((int) who.getTranslateX() + 20, (int) who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.RED, 5);
         animationPanel.getChildren().add(s);
+        if (who == spaceShip) {
+            Media sound = new Media(getClass().getResource("/sounds/laser" + level + ".wav").toExternalForm());
+            MediaPlayer mediaPlayer = new MediaPlayer(sound);
+            mediaPlayer.play();
+        }
     }
 
     private void moveSpaceship() {
