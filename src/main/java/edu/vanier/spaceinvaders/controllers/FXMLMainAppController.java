@@ -8,9 +8,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import static javafx.scene.input.KeyCode.A;
-import static javafx.scene.input.KeyCode.D;
-import static javafx.scene.input.KeyCode.SPACE;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -57,10 +54,20 @@ public class FXMLMainAppController {
     private static int level = 1;
     private static int score = 0;
 
-    private boolean canShoot = true; // Flag to control shooting cooldown
-    private final long coolDown = 300; // Adjust this value for the desired cooldown in milliseconds
-    private long lastShotTime = 0; // Timestamp of the last shot
-    private boolean shooting = false;
+    /**
+     * Cool-down between shots that user can fire
+     */
+    private final long COOL_DOWN = 400;
+
+    /**
+     * Timestamp of the previous spaceship shot
+     */
+    private long lastShotTime = 0;
+
+    /**
+     * Represents whether the spaceship is currently shooting or not
+     */
+    private boolean isShooting = false;
     
 
     @FXML
@@ -75,18 +82,14 @@ public class FXMLMainAppController {
         createContent();
         this.scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
-                case W ->
-                    upPressed = true;
-                case A ->
-                    leftPressed = true;
-                case S ->
-                    downPressed = true;
-                case D ->
-                    rightPressed = true;
+                case W -> upPressed = true;
+                case A -> leftPressed = true;
+                case S -> downPressed = true;
+                case D -> rightPressed = true;
                 case SPACE -> {
                     long currentTime = System.currentTimeMillis();
-                    if (currentTime - lastShotTime >= coolDown) {
-                        shooting = true;
+                    if (currentTime - lastShotTime >= COOL_DOWN) {
+                        isShooting = true;
                         shoot(spaceShip);
                         lastShotTime = currentTime;
                     }
@@ -96,16 +99,11 @@ public class FXMLMainAppController {
 
         this.scene.setOnKeyReleased(e -> {
             switch (e.getCode()) {
-                case W ->
-                    upPressed = false;
-                case A ->
-                    leftPressed = false;
-                case S ->
-                    downPressed = false;
-                case D ->
-                    rightPressed = false;
-                case SPACE ->
-                    shooting = false;
+                case W -> upPressed = false;
+                case A -> leftPressed = false;
+                case S -> downPressed = false;
+                case D -> rightPressed = false;
+                case SPACE -> isShooting = false;
             }
         });
     }
@@ -153,13 +151,8 @@ public class FXMLMainAppController {
     private void update() {
         elapsedTime += 0.016;
 
-        // Move player every time timer is updated
-        moveSpaceship();
-
-        if (shooting && System.currentTimeMillis() - lastShotTime >= coolDown) {
-            shoot(spaceShip);
-            lastShotTime = System.currentTimeMillis();
-        }
+        // Handle spaceship movement and shooting every frame
+        updateSpaceShip();
 
         // Determine movement direction of all enemies
         boolean movingDown = false;
@@ -233,7 +226,7 @@ public class FXMLMainAppController {
                     }
                     // Move down if there is change in direction (wall is hit)
                     if (movingDown) {
-                        for (int i = 0; i < 15; i++) {
+                        for (int i = 0; i < 20; i++) {
                             sprite.moveDown();
                         }
                     }
@@ -266,6 +259,7 @@ public class FXMLMainAppController {
             stopAnimation();
         }
 
+        // Reset timer for enemies shooting
         if (elapsedTime > 2) {
             elapsedTime = 0;
         }
@@ -281,7 +275,7 @@ public class FXMLMainAppController {
         }
     }
 
-    private void moveSpaceship() {
+    private void updateSpaceShip() {
         if (leftPressed) {
             spaceShip.moveLeft();
         }
@@ -293,6 +287,11 @@ public class FXMLMainAppController {
         }
         if (downPressed) {
             spaceShip.moveDown();
+        }
+
+        if (isShooting && System.currentTimeMillis() - lastShotTime >= COOL_DOWN) {
+            shoot(spaceShip);
+            lastShotTime = System.currentTimeMillis();
         }
     }
 
