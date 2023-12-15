@@ -12,17 +12,20 @@ import javafx.scene.shape.Rectangle;
  */
 public class Sprite extends Rectangle {
     
-    /** Flag indicating whether the sprite is dead or alive */
+    /**
+     * Flag indicating whether the sprite is dead or alive
+     */
     private boolean dead = false;
     
-    /** The type of the sprite */
+    /**
+     * The type of the sprite
+     */
     private final String type;
     
-    /** The speed of the sprite */
-    private double speed;
-
-    private double width;
-    private double height;
+    /**
+     * The speed of the sprite
+     */
+    private final double speed;
     
     /**
      * Constructs a sprite with the specified position, dimensions, type, image, and speed.
@@ -37,9 +40,6 @@ public class Sprite extends Rectangle {
      */
     public Sprite(double x, double y, int w, int h, String type, Paint image, double speed) {
         super(w, h, image);
-
-        this.width = w;
-        this.height = h;
 
         this.type = type;
         this.speed = speed;

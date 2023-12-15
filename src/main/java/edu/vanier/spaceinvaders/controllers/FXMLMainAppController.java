@@ -10,7 +10,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.text.Text;
 
@@ -70,7 +69,7 @@ public class FXMLMainAppController {
     private Text congratulationsText;
 
     /**
-     * The elapsed time for controlling spaceship shooting cool down.
+     * The elapsed time for controlling enemy shooting cool down.
      */
     private double elapsedTime = 0;
 
@@ -136,11 +135,6 @@ public class FXMLMainAppController {
      * The current player score.
      */
     private static int score = 0;
-
-    /**
-     * The audio player for shooting sounds.
-     */
-    private MediaPlayer shootAudio;
 
     /**
      * The audio player for explosion sounds.
@@ -306,11 +300,14 @@ public class FXMLMainAppController {
         // Determine movement direction of all enemies
         boolean movingDown = false;
         for (Sprite sprite : sprites().stream().filter(sprite -> sprite.getType().equals("enemy")).toList()) {
+            // Check if enemy has hit right wall
             if (sprite.getTranslateX() > WIDTH - 100) {
                 movingRight = false;
                 movingDown = true;
                 break;
             }
+
+            // Check if enemy has hit left wall
             if (sprite.getTranslateX() < 70) {
                 movingRight = true;
                 movingDown = true;
@@ -323,12 +320,20 @@ public class FXMLMainAppController {
                 case "enemyBullet" -> {
                     sprite.moveDown();
                     if (sprite.getBoundsInParent().intersects(spaceShip.getBoundsInParent())) {
+                        // Update lives
                         livesLabel.setText(Integer.toString(--lives));
                         if (lives == 0) {
                             spaceShip.setDead(true);
                             gameOver = true;
                         }
                         sprite.setDead(true);
+
+                        // Add explosion if enemy bullet hits spaceship
+                        ImagePattern img = new ImagePattern(new Image("/images/explosion.png"));
+                        Sprite explode = new Sprite(sprite.getTranslateX(), sprite.getTranslateY(), 40, 40, "explosion", img, 1);
+                        animationPanel.getChildren().add(explode);
+
+                        // Play audio
                         explosionAudio.play();
                         explosionAudio.seek(explosionAudio.getStartTime());
                     }
@@ -349,14 +354,15 @@ public class FXMLMainAppController {
                             explosionAudio.play();
                             explosionAudio.seek(explosionAudio.getStartTime());
 
-                            Image explosion = new Image("/images/explosion.png");
-                            ImagePattern img = new ImagePattern(explosion);
+                            // Add explosion if player bullet hits enemy
+                            ImagePattern img = new ImagePattern(new Image("/images/explosion.png"));
                             Sprite explode = new Sprite(sprite.getTranslateX(), sprite.getTranslateY(), 40, 40, "explosion", img, 1);
                             animationPanel.getChildren().add(explode);
                         }
                     });
                 }
                 case "enemy" -> {
+                    // Enemies only shoot after cool-down has expired
                     if (elapsedTime > 2) {
                         // Random probability of shooting and only shoot if entity is alive
                         if (Math.random() < 0.3 && !sprite.isDead()) {
@@ -364,6 +370,7 @@ public class FXMLMainAppController {
                         }
                     }
 
+                    // Calculate intersect for enemies
                     if (sprite.getBoundsInParent().intersects(spaceShip.getBoundsInParent())) {
                         lives = 0;
                         livesLabel.setText(Integer.toString(lives));
@@ -392,7 +399,7 @@ public class FXMLMainAppController {
                     }
                 }
                 case "explosion" -> {
-                    // Shrink explosion
+                    // Shrink explosion every frame
                     sprite.setScaleX(sprite.getScaleX() - 0.02);
                     sprite.setScaleY(sprite.getScaleY() - 0.02);
                 }
@@ -422,9 +429,10 @@ public class FXMLMainAppController {
             }
         });
 
+        // Count number of invaders
         long invaderCount = sprites().stream().filter(s -> s.getType().equals("enemy")).count();
 
-        // Set game over if all enemies are gone
+        // Set game over if all enemies are dead
         if (invaderCount == 0) {
             gameOver = true;
             if (level < 3) {
@@ -467,10 +475,15 @@ public class FXMLMainAppController {
      */
     private void shoot(Sprite who) {
         if (who == spaceShip) {
+            // Image of rockets depends on user settings of rockets/laser and level
             ImagePattern image = new ImagePattern(new Image(String.format("/images/%s%d.png", isRocketsOn ? "rocket" : "laser", level)));
-            double spacing = 15; // Spacing between bullets
-            double width = (level - 1) * spacing; // Distance between furthest left and right bullet
-            double x = 18 + who.getTranslateX() - width / 2; // x position of left bullet
+            // Spacing between bullets
+            double spacing = 15;
+            // Distance between furthest left and right bullet
+            double width = (level - 1) * spacing;
+            // x position of left bullet
+            double x = 18 + who.getTranslateX() - width / 2;
+            // Number of rockets increases every level
             for (int i = 0; i < level; i++) {
                 Sprite s = new Sprite(x + i * spacing, who.getTranslateY(), 5, 20, who.getType() + "Bullet", image, 5);
                 animationPanel.getChildren().add(s);
@@ -479,7 +492,8 @@ public class FXMLMainAppController {
             // Set media for shooting sounds
             Media shootSound = new Media(getClass().getResource(String.format("/sounds/%s%d.wav", isRocketsOn? "rocket" : "laser", level)).toExternalForm());
 
-            shootAudio = new MediaPlayer(shootSound);
+            // Create new audio player because shots depends on laser/rockets
+            MediaPlayer shootAudio = new MediaPlayer(shootSound);
             shootAudio.setVolume(0.2);
             shootAudio.play();
             shootAudio.seek(shootAudio.getStartTime());
@@ -492,8 +506,7 @@ public class FXMLMainAppController {
 
     /**
      * Updates the spaceship's position based on the keys pressed and triggers
-     * shooting if the SPACE key is held down and enough time has passed since
-     * the last shot.
+     * shooting enough time has passed since cool-down
      */
     private void updateSpaceShip() {
         // Moves spaceship depending on which keys are pressed
