@@ -61,5 +61,10 @@
             <Font name="Impact" size="72.0" />
          </font>
       </Text>
+      <Text fill="WHITE" layoutX="2.0" layoutY="995.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Press R to change bullet type">
+         <font>
+            <Font name="Impact" size="24.0" />
+         </font>
+      </Text>
    </children>
 </Pane>
