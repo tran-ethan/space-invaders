@@ -360,7 +360,7 @@ public class FXMLMainAppController {
             // Set media for shooting sounds
             Media shootSound;
             if (isRocketsOn) {
-                shootSound = new Media(getClass().getResource("/sounds/laser" + level + ".wav").toExternalForm());
+                shootSound = new Media(getClass().getResource("/sounds/rocket" + level + ".wav").toExternalForm());
             } else {
                 shootSound = new Media(getClass().getResource("/sounds/laser" + level + ".wav").toExternalForm());
             }
