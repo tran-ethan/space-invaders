@@ -19,48 +19,133 @@ import java.util.stream.Collectors;
 import javafx.scene.image.ImageView;
 
 /**
- * Controller class of the MainApp's UI.
+ * The FXMLMainAppController class is the controller for the MainApp's UI. It
+ * manages user interactions and updates the game components in response to
+ * events. This controller is associated with the SpaceInvadersApp application.
  *
- * @author frostybee
+ * @author Ethan Tran
+ * @author Zachary Tremblay
  */
 public class FXMLMainAppController {
 
+    /**
+     * The panel where the game animation occurs.
+     */
     @FXML
     private Pane animationPanel;
+
+    /**
+     * The button to restart the game after game over.
+     */
     @FXML
     private Button gameOverButton;
+
+    /**
+     * The text displayed when the game is over.
+     */
     @FXML
     private Text gameOverText;
+
+    /**
+     * The label displaying the remaining lives.
+     */
     @FXML
     private Label livesLabel;
+
+    /**
+     * The text displaying the current score.
+     */
     @FXML
     private Text scoreLabel;
+
+    /**
+     * The label displaying the current game level.
+     */
     @FXML
     private Label levelLabel;
+
+    /**
+     * The text displayed when the player completes the game.
+     */
     @FXML
     private Text congratulationsText;
 
+    /**
+     * The elapsed time for controlling spaceship shooting cool down.
+     */
     private double elapsedTime = 0;
+
+    /**
+     * The spaceship sprite representing the player.
+     */
     private Sprite spaceShip;
+
+    /**
+     * The JavaFX scene associated with the controller.
+     */
     private Scene scene;
+
+    /**
+     * The animation timer for the game loop.
+     */
     AnimationTimer animation;
 
+    /**
+     * The width of the game screen.
+     */
     private final double WIDTH = 800;
+
+    /**
+     * The height of the game screen.
+     */
     private final double HEIGHT = 1000;
 
+    /**
+     * Flags indicating the direction of spaceship movement.
+     */
     private boolean upPressed = false;
     private boolean downPressed = false;
     private boolean leftPressed = false;
     private boolean rightPressed = false;
+
+    /**
+     * Flag indicating whether the type of bullet has been switched
+     */
     private boolean isRocketsOn = false;
 
+    /**
+     * Flag indicating the direction of enemy movement.
+     */
     private boolean movingRight = true;
+
+    /**
+     * Flag indicating the game state.
+     */
     private boolean gameOver = false;
+
+    /**
+     * The number of lives remaining for the player.
+     */
     private static int lives = 3;
+
+    /**
+     * The current game level.
+     */
     private static int level = 1;
+
+    /**
+     * The current player score.
+     */
     private static int score = 0;
 
+    /**
+     * The audio player for shooting sounds.
+     */
     private MediaPlayer shootAudio;
+
+    /**
+     * The audio player for explosion sounds.
+     */
     private MediaPlayer explosionAudio;
 
     /**
@@ -78,11 +163,19 @@ public class FXMLMainAppController {
      */
     private boolean isShooting = false;
 
+    /**
+     * Initializes the controller, setting an event handler for the game over
+     * button.
+     */
     @FXML
     public void initialize() {
         gameOverButton.setOnAction(e -> nextLevel());
     }
 
+    /**
+     * Initializes the game components and sets up keybindings for spaceship
+     * movements and shooting.
+     */
     public void initGameComponents() {
         createContent();
         // Define keybindings for spaceship movements
@@ -127,6 +220,10 @@ public class FXMLMainAppController {
         });
     }
 
+    /**
+     * Creates the game content, including the animation panel, sprites, and
+     * game loop.
+     */
     private void createContent() {
 
         // Create the game loop
@@ -139,6 +236,10 @@ public class FXMLMainAppController {
         nextLevel();
     }
 
+    /**
+     * Initiates the next game level by resetting counters, labels, and removing
+     * overlay text and button.
+     */
     private void nextLevel() {
         // Reset counters
         gameOver = false;
@@ -185,10 +286,20 @@ public class FXMLMainAppController {
         gameOverButton.toFront();
     }
 
+    /**
+     * Retrieves the list of sprites from the animation panel.
+     *
+     * @return A list of sprites.
+     */
     private List<Sprite> sprites() {
         return animationPanel.getChildren().stream().filter(n -> n instanceof Sprite).map(n -> (Sprite) n).collect(Collectors.toList());
     }
 
+    /**
+     * Updates the game state during each frame of the animation loop. Handles
+     * spaceship movement, shooting, enemy actions, collisions, and game over
+     * conditions.
+     */
     private void update() {
         elapsedTime += 0.016;
 
@@ -342,6 +453,12 @@ public class FXMLMainAppController {
         }
     }
 
+    /**
+     * Shoots bullets from the specified sprite, creating and adding bullet
+     * sprites to the animation panel.
+     *
+     * @param who The sprite shooting the bullets.
+     */
     private void shoot(Sprite who) {
         if (who == spaceShip) {
             ImagePattern image;
@@ -374,6 +491,11 @@ public class FXMLMainAppController {
         }
     }
 
+    /**
+     * Updates the spaceship's position based on the keys pressed and triggers
+     * shooting if the SPACE key is held down and enough time has passed since
+     * the last shot.
+     */
     private void updateSpaceShip() {
         // Moves spaceship depending on which keys are pressed
         if (leftPressed && spaceShip.getTranslateX() > 0) {
@@ -396,10 +518,18 @@ public class FXMLMainAppController {
         }
     }
 
+    /**
+     * Sets the JavaFX Scene for the controller to handle key events.
+     *
+     * @param scene The JavaFX Scene to be set.
+     */
     public void setScene(Scene scene) {
         this.scene = scene;
     }
 
+    /**
+     * Stops the animation loop if it is currently running.
+     */
     public void stopAnimation() {
         if (animation != null) {
             animation.stop();
