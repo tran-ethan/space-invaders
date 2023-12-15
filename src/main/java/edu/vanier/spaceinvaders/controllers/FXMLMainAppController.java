@@ -205,16 +205,11 @@ public class FXMLMainAppController {
         // Release movement for spaceship
         this.scene.setOnKeyReleased(e -> {
             switch (e.getCode()) {
-                case W ->
-                    upPressed = false;
-                case A ->
-                    leftPressed = false;
-                case S ->
-                    downPressed = false;
-                case D ->
-                    rightPressed = false;
-                case SPACE ->
-                    isShooting = false;
+                case W -> upPressed = false;
+                case A -> leftPressed = false;
+                case S -> downPressed = false;
+                case D -> rightPressed = false;
+                case SPACE -> isShooting = false;
             }
         });
     }
@@ -263,8 +258,10 @@ public class FXMLMainAppController {
         // Spawn enemies according to level
         for (int j = 0; j < level + 2; j++) {
             for (int i = 0; i < 5; i++) {
+                // Randomize image of enemies
                 ImagePattern enemy = new ImagePattern(new Image(String.format("/images/intruder%d.png", 1 + (int) (Math.random() * 5))));
 
+                // Add enemies to level
                 Sprite invader = new Sprite(90 + i * 100, 150 + j * 50, 30, 30, "enemy", enemy, level);
                 animationPanel.getChildren().add(invader);
             }
@@ -273,6 +270,7 @@ public class FXMLMainAppController {
         // Prevent continual shooting after level reset
         isShooting = false;
 
+        // Start animation because it was stopped after game over
         animation.start();
 
         // Set media for explosion sounds
@@ -448,6 +446,7 @@ public class FXMLMainAppController {
             // Display game over text
             gameOverButton.setVisible(true);
             stopAnimation();
+
             // Reset counters
             level = 1;
             score = 0;
@@ -468,12 +467,7 @@ public class FXMLMainAppController {
      */
     private void shoot(Sprite who) {
         if (who == spaceShip) {
-            ImagePattern image;
-            if (isRocketsOn) {
-                image = new ImagePattern(new Image(String.format("/images/rocket%d.png", level)));
-            } else {
-                image = new ImagePattern(new Image(String.format("/images/laser%d.png", level)));
-            }
+            ImagePattern image = new ImagePattern(new Image(String.format("/images/%s%d.png", isRocketsOn ? "rocket" : "laser", level)));
             double spacing = 15; // Spacing between bullets
             double width = (level - 1) * spacing; // Distance between furthest left and right bullet
             double x = 18 + who.getTranslateX() - width / 2; // x position of left bullet
@@ -481,13 +475,10 @@ public class FXMLMainAppController {
                 Sprite s = new Sprite(x + i * spacing, who.getTranslateY(), 5, 20, who.getType() + "Bullet", image, 5);
                 animationPanel.getChildren().add(s);
             }
+
             // Set media for shooting sounds
-            Media shootSound;
-            if (isRocketsOn) {
-                shootSound = new Media(getClass().getResource("/sounds/rocket" + level + ".wav").toExternalForm());
-            } else {
-                shootSound = new Media(getClass().getResource("/sounds/laser" + level + ".wav").toExternalForm());
-            }
+            Media shootSound = new Media(getClass().getResource(String.format("/sounds/%s%d.wav", isRocketsOn? "rocket" : "laser", level)).toExternalForm());
+
             shootAudio = new MediaPlayer(shootSound);
             shootAudio.setVolume(0.2);
             shootAudio.play();
