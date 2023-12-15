@@ -16,6 +16,7 @@ import javafx.scene.text.Text;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import javafx.scene.image.ImageView;
 
 /**
  * Controller class of the MainApp's UI.
@@ -36,6 +37,8 @@ public class FXMLMainAppController {
     private Text scoreLabel;
     @FXML
     private Label levelLabel;
+    @FXML
+    private Text congratulationsText;
 
     private double elapsedTime = 0;
     private Sprite spaceShip;
@@ -150,6 +153,7 @@ public class FXMLMainAppController {
         // Remove overlay text and button
         gameOverText.setVisible(false);
         gameOverButton.setVisible(false);
+        congratulationsText.setVisible(false);
 
         animationPanel.getChildren().removeIf(n -> n instanceof Sprite);
 
@@ -248,6 +252,12 @@ public class FXMLMainAppController {
                             // Play audio
                             explosionAudio.play();
                             explosionAudio.seek(explosionAudio.getStartTime());
+
+                            Image explosion = new Image("/images/explosion.png");
+                            ImageView image = new ImageView(explosion);
+                            image.setLayoutX(sprite.getLayoutX());
+                            image.setLayoutY(sprite.getLayoutY());
+                            animationPanel.getChildren().add(image);
                         }
                     });
                 }
@@ -311,7 +321,13 @@ public class FXMLMainAppController {
         // Check if game is over
         if (gameOver) {
             // Display game over text
-            gameOverText.setVisible(true);
+            if (level == 3 && invaderCount == 0) {
+                congratulationsText.setVisible(true);
+            } else {
+                gameOverText.setVisible(true);
+            }
+
+            // Display game over text
             gameOverButton.setVisible(true);
             stopAnimation();
             // Reset counters
@@ -344,7 +360,7 @@ public class FXMLMainAppController {
             // Set media for shooting sounds
             Media shootSound;
             if (isRocketsOn) {
-               shootSound = new Media(getClass().getResource("/sounds/laser" + level + ".wav").toExternalForm());
+                shootSound = new Media(getClass().getResource("/sounds/laser" + level + ".wav").toExternalForm());
             } else {
                 shootSound = new Media(getClass().getResource("/sounds/laser" + level + ".wav").toExternalForm());
             }
