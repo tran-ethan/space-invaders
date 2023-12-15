@@ -484,7 +484,8 @@ public class FXMLMainAppController {
             shootAudio.play();
             shootAudio.seek(shootAudio.getStartTime());
         } else {
-            Sprite s = new Sprite(who.getTranslateX() + 20, who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.RED, 5);
+            ImagePattern image = new ImagePattern(new Image("/images/enemylaser.png"));
+            Sprite s = new Sprite(who.getTranslateX() + 20, who.getTranslateY(), 5, 20, who.getType() + "Bullet", image, 5);
             animationPanel.getChildren().add(s);
         }
     }
