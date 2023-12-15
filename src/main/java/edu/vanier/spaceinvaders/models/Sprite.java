@@ -20,6 +20,9 @@ public class Sprite extends Rectangle {
     
     /** The speed of the sprite */
     private double speed;
+
+    private double width;
+    private double height;
     
     /**
      * Constructs a sprite with the specified position, dimensions, type, image, and speed.
@@ -34,6 +37,9 @@ public class Sprite extends Rectangle {
      */
     public Sprite(double x, double y, int w, int h, String type, Paint image, double speed) {
         super(w, h, image);
+
+        this.width = w;
+        this.height = h;
 
         this.type = type;
         this.speed = speed;

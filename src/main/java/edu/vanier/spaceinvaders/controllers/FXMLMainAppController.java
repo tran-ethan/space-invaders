@@ -16,7 +16,6 @@ import javafx.scene.text.Text;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import javafx.scene.image.ImageView;
 
 /**
  * The FXMLMainAppController class is the controller for the MainApp's UI. It
@@ -353,10 +352,9 @@ public class FXMLMainAppController {
                             explosionAudio.seek(explosionAudio.getStartTime());
 
                             Image explosion = new Image("/images/explosion.png");
-                            ImageView image = new ImageView(explosion);
-                            image.setLayoutX(sprite.getLayoutX());
-                            image.setLayoutY(sprite.getLayoutY());
-                            animationPanel.getChildren().add(image);
+                            ImagePattern img = new ImagePattern(explosion);
+                            Sprite explode = new Sprite(sprite.getTranslateX(), sprite.getTranslateY(), 40, 40, "explosion", img, 1);
+                            animationPanel.getChildren().add(explode);
                         }
                     });
                 }
@@ -395,6 +393,11 @@ public class FXMLMainAppController {
                         gameOver = true;
                     }
                 }
+                case "explosion" -> {
+                    // Shrink explosion
+                    sprite.setScaleX(sprite.getScaleX() - 0.02);
+                    sprite.setScaleY(sprite.getScaleY() - 0.02);
+                }
             }
         }
 
@@ -410,6 +413,10 @@ public class FXMLMainAppController {
         animationPanel.getChildren().removeIf(n -> {
             try {
                 Sprite sprite = (Sprite) n;
+                // Set dead for explosions becoming too small
+                if (sprite.getScaleX() <= 0) {
+                    sprite.setDead(true);
+                }
                 return sprite.isDead();
             } catch (Exception e) {
                 // Do not remove non-sprite entity
