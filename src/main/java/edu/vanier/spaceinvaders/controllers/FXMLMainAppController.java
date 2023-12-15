@@ -85,14 +85,10 @@ public class FXMLMainAppController {
         // Define keybindings for spaceship movements
         this.scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
-                case W ->
-                    upPressed = true;
-                case A ->
-                    leftPressed = true;
-                case S ->
-                    downPressed = true;
-                case D ->
-                    rightPressed = true;
+                case W -> upPressed = true;
+                case A -> leftPressed = true;
+                case S -> downPressed = true;
+                case D -> rightPressed = true;
                 case SPACE -> {
                     long currentTime = System.currentTimeMillis();
                     // Only shoot if elapsed time since last shoot is greater or equal to cooldown
@@ -108,16 +104,11 @@ public class FXMLMainAppController {
         // Release movement for spaceship
         this.scene.setOnKeyReleased(e -> {
             switch (e.getCode()) {
-                case W ->
-                    upPressed = false;
-                case A ->
-                    leftPressed = false;
-                case S ->
-                    downPressed = false;
-                case D ->
-                    rightPressed = false;
-                case SPACE ->
-                    isShooting = false;
+                case W -> upPressed = false;
+                case A -> leftPressed = false;
+                case S -> downPressed = false;
+                case D -> rightPressed = false;
+                case SPACE -> isShooting = false;
             }
         });
     }
@@ -152,7 +143,7 @@ public class FXMLMainAppController {
 
         ImagePattern image = new ImagePattern(new Image(String.format("/images/ship%d.png", level)));
 
-        spaceShip = new Sprite((int) (WIDTH / 2), 750, 40, 40, "player", image, 5);
+        spaceShip = new Sprite(WIDTH / 2, 750, 40, 40, "player", image, 5);
         animationPanel.getChildren().add(spaceShip);
 
         // Spawn enemies according to level
@@ -329,17 +320,18 @@ public class FXMLMainAppController {
     }
 
     private void shoot(Sprite who) {
-
-        // TODO Fix multiple bullets shots
         if (who == spaceShip) {
+            double spacing = 15; // Spacing between bullets
+            double width = (level - 1) * spacing; // Distance between furthest left and right bullet
+            double x = 18 + who.getTranslateX() - width / 2; // x position of left bullet
             for (int i = 0; i < level; i++) {
-                Sprite s = new Sprite((int) who.getTranslateX() + 20, (int) who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.RED, 5);
+                Sprite s = new Sprite(x + i * spacing, who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.RED, 5);
                 animationPanel.getChildren().add(s);
             }
             shootAudio.play();
             shootAudio.seek(shootAudio.getStartTime());
         } else {
-            Sprite s = new Sprite((int) who.getTranslateX() + 20, (int) who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.RED, 5);
+            Sprite s = new Sprite(who.getTranslateX() + 20, who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.RED, 5);
             animationPanel.getChildren().add(s);
         }
     }

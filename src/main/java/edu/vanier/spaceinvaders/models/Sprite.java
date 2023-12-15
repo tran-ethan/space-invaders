@@ -13,7 +13,7 @@ public class Sprite extends Rectangle {
     private final String type;
     private double speed;
 
-    public Sprite(int x, int y, int w, int h, String type, Paint image, double speed) {
+    public Sprite(double x, double y, int w, int h, String type, Paint image, double speed) {
         super(w, h, image);
 
         this.type = type;
