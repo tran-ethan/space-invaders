@@ -49,6 +49,7 @@ public class FXMLMainAppController {
     private boolean downPressed = false;
     private boolean leftPressed = false;
     private boolean rightPressed = false;
+    private boolean isRocketsOn = false;
 
     private int invaderCount;
     private boolean movingRight = true;
@@ -85,10 +86,16 @@ public class FXMLMainAppController {
         // Define keybindings for spaceship movements
         this.scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
-                case W -> upPressed = true;
-                case A -> leftPressed = true;
-                case S -> downPressed = true;
-                case D -> rightPressed = true;
+                case W ->
+                    upPressed = true;
+                case A ->
+                    leftPressed = true;
+                case S ->
+                    downPressed = true;
+                case D ->
+                    rightPressed = true;
+                case R ->
+                    isRocketsOn = !isRocketsOn;
                 case SPACE -> {
                     long currentTime = System.currentTimeMillis();
                     // Only shoot if elapsed time since last shoot is greater or equal to cooldown
@@ -104,11 +111,16 @@ public class FXMLMainAppController {
         // Release movement for spaceship
         this.scene.setOnKeyReleased(e -> {
             switch (e.getCode()) {
-                case W -> upPressed = false;
-                case A -> leftPressed = false;
-                case S -> downPressed = false;
-                case D -> rightPressed = false;
-                case SPACE -> isShooting = false;
+                case W ->
+                    upPressed = false;
+                case A ->
+                    leftPressed = false;
+                case S ->
+                    downPressed = false;
+                case D ->
+                    rightPressed = false;
+                case SPACE ->
+                    isShooting = false;
             }
         });
     }
@@ -163,13 +175,8 @@ public class FXMLMainAppController {
 
         animation.start();
 
-        // Set media for shooting sounds
-        Media shootSound = new Media(getClass().getResource("/sounds/laser" + level + ".wav").toExternalForm());
-        shootAudio = new MediaPlayer(shootSound);
-        shootAudio.setVolume(0.2);
-
         // Set media for explosion sounds
-        Media explosionSound = new Media(getClass().getResource("/sounds/explosion.wav").toExternalForm());
+        Media explosionSound = new Media(getClass().getResource("/sounds/explosion" + level + ".wav").toExternalForm());
         explosionAudio = new MediaPlayer(explosionSound);
         explosionAudio.setVolume(0.1);
 
@@ -321,13 +328,28 @@ public class FXMLMainAppController {
 
     private void shoot(Sprite who) {
         if (who == spaceShip) {
+            ImagePattern image;
+            if (isRocketsOn) {
+                image = new ImagePattern(new Image(String.format("/images/rocket%d.png", level)));
+            } else {
+                image = new ImagePattern(new Image(String.format("/images/laser%d.png", level)));
+            }
             double spacing = 15; // Spacing between bullets
             double width = (level - 1) * spacing; // Distance between furthest left and right bullet
             double x = 18 + who.getTranslateX() - width / 2; // x position of left bullet
             for (int i = 0; i < level; i++) {
-                Sprite s = new Sprite(x + i * spacing, who.getTranslateY(), 5, 20, who.getType() + "Bullet", Color.RED, 5);
+                Sprite s = new Sprite(x + i * spacing, who.getTranslateY(), 5, 20, who.getType() + "Bullet", image, 5);
                 animationPanel.getChildren().add(s);
             }
+            // Set media for shooting sounds
+            Media shootSound;
+            if (isRocketsOn) {
+               shootSound = new Media(getClass().getResource("/sounds/laser" + level + ".wav").toExternalForm());
+            } else {
+                shootSound = new Media(getClass().getResource("/sounds/laser" + level + ".wav").toExternalForm());
+            }
+            shootAudio = new MediaPlayer(shootSound);
+            shootAudio.setVolume(0.2);
             shootAudio.play();
             shootAudio.seek(shootAudio.getStartTime());
         } else {
