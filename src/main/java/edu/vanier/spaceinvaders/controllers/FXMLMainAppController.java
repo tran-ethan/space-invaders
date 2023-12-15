@@ -54,7 +54,6 @@ public class FXMLMainAppController {
     private boolean rightPressed = false;
     private boolean isRocketsOn = false;
 
-    private int invaderCount;
     private boolean movingRight = true;
     private boolean gameOver = false;
     private static int lives = 3;
@@ -142,7 +141,6 @@ public class FXMLMainAppController {
 
     private void nextLevel() {
         // Reset counters
-        invaderCount = 0;
         gameOver = false;
 
         // Reset labels
@@ -169,8 +167,6 @@ public class FXMLMainAppController {
 
                 Sprite invader = new Sprite(90 + i * 100, 150 + j * 50, 30, 30, "enemy", enemy, level);
                 animationPanel.getChildren().add(invader);
-
-                invaderCount++;
             }
         }
 
@@ -241,14 +237,6 @@ public class FXMLMainAppController {
                             score += 10;
                             scoreLabel.setText(Integer.toString(score));
 
-                            if (--invaderCount <= 0 && level == 3) {
-                                gameOver = true;
-                            } else if (invaderCount <= 0) {
-                                level++;
-                                levelLabel.setText(Integer.toString(level));
-                                nextLevel();
-                            }
-
                             // Play audio
                             explosionAudio.play();
                             explosionAudio.seek(explosionAudio.getStartTime());
@@ -318,9 +306,21 @@ public class FXMLMainAppController {
             }
         });
 
+        long invaderCount = sprites().stream().filter(s -> s.getType().equals("enemy")).count();
+
+        // Set game over if all enemies are gone
+        if (invaderCount == 0) {
+            gameOver = true;
+            if (level < 3) {
+                level++;
+                levelLabel.setText(Integer.toString(level));
+                nextLevel();
+            }
+        }
+
         // Check if game is over
         if (gameOver) {
-            // Display game over text
+            // Display congratulations if no invaders level 3
             if (level == 3 && invaderCount == 0) {
                 congratulationsText.setVisible(true);
             } else {
