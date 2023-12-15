@@ -43,7 +43,9 @@ public class SpaceInvadersApp extends Application {
             controller.setScene(scene);
             controller.initGameComponents();
 
+            // Configure primary stage
             primaryStage.setScene(scene);
+            primaryStage.setResizable(false);
             primaryStage.setTitle("Space Invaders!");
             primaryStage.sizeToScene();
             primaryStage.setAlwaysOnTop(true);
@@ -61,7 +63,7 @@ public class SpaceInvadersApp extends Application {
      */
     @Override
     public void stop() throws Exception {
-        // Stop the animation timer upon closing the main stage.
+        // Stop the animation timer upon closing the main stage
         controller.stopAnimation();
     }
     

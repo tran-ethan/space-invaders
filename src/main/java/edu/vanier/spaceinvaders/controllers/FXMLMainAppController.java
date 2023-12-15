@@ -174,16 +174,11 @@ public class FXMLMainAppController {
         // Define keybindings for spaceship movements
         this.scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
-                case W ->
-                    upPressed = true;
-                case A ->
-                    leftPressed = true;
-                case S ->
-                    downPressed = true;
-                case D ->
-                    rightPressed = true;
-                case R ->
-                    isRocketsOn = !isRocketsOn;
+                case W -> upPressed = true;
+                case A -> leftPressed = true;
+                case S -> downPressed = true;
+                case D -> rightPressed = true;
+                case R -> isRocketsOn = !isRocketsOn;
                 case SPACE -> {
                     long currentTime = System.currentTimeMillis();
                     // Only shoot if elapsed time since last shoot is greater or equal to cooldown
