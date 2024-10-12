@@ -5,7 +5,6 @@ This project is a 2D shooter game, inspired by the classic 1978 _Space Invaders_
 - **Spaceship Movement**: The spaceship moves freely in all directions and is controlled using the WASD keys. It initially spawns at the bottom center of the screen.
 - **Shooting and Rockets**: Players can fire rockets to eliminate invaders. The type of rocket can be changed by pressing a key. A sound effect is played whenever rockets are fired.
 - **Invader Spawning**: The game generates random invaders with different 2D sprites. The first level starts with at least 15 invaders. Their speed and number increase as the player progresses through levels.
-- **Explosion Effects**: Whenever a rocket hits an invader, an explosion effect is triggered, accompanied by a sound effect.
 - **Game Over Conditions**: The game ends when all aliens are eliminated or when the spaceship is hit by invaders three times. A congratulation screen is displayed when the player wins.
 
 ## Getting started
