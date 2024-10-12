@@ -1,27 +1,42 @@
-# JavaFX Project Template
+# Space Invaders
+This project is a 2D shooter game, inspired by the classic _Space Invaders_, where players control a spaceship to destroy alien invaders. It is implemented using Open JavaFX 20 with FXML for the graphical interface. The game features multiple levels, each with increasing difficulty, and provides an interactive experience with sound effects, explosions, and various game assets.
 
-This is a non-modular, Gradle-based project skeleton for creating JavaFX applications.
+## Game Mechanics
+- **Spaceship Movement**: The spaceship moves freely in all directions and is controlled using the WASD keys. It initially spawns at the bottom center of the screen.
+- **Shooting and Rockets**: Players can fire rockets to eliminate invaders. The type of rocket can be changed by pressing a key. A sound effect is played whenever rockets are fired.
+- **Invader Spawning**: The game generates random invaders with different 2D sprites. The first level starts with at least 15 invaders. Their speed and number increase as the player progresses through levels.
+- **Explosion Effects**: Whenever a rocket hits an invader, an explosion effect is triggered, accompanied by a sound effect.
+- **Game Over Conditions**: The game ends when all aliens are eliminated or when the spaceship is hit by invaders three times. A congratulation screen is displayed when the player wins.
 
-It uses `JavaFX 20.0.2`, and includes the [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) (no need to install Gradle locally).
+## Getting started
+### Prerequisites
+Before you can build and run this project, ensure you have the following software installed on your system:
+- [Oracle OpenJDK 18](https://www.oracle.com/java/technologies/javase/jdk18-archive-downloads.html)
 
-## Features
+### Installation
+Make sure Git is installed on your system before continuing with the installation
+1. Clone the repository
+```shell
+git clone https://github.com/tran-ethan/space-invaders.git
+```
+2. Navigate to the project directory
+```shell
+cd space-invaders
+```
+3. Build the project
+```shell
+./gradlew build
+```
 
-- JavaFX-aware coding assistance (code completion, search, navigation in JavaFX-specific source files)
-- Logging with [Logback](https://logback.qos.ch/).
-- Support for FXML.
-- Access to JavaFX's JavaDoc from within your IDE.
+## Usage
+### Using Gradle Wrapper
+Make sure Oracle OpenJDK 18 is properly configured in the `JAVA_HOME` environment variable before trying this method. To run the application using the Gradle Wrapper, execute the following command:
+```shell
+./gradlew run
+```
 
-## Using this Project Template
+### Using IDE
+You can run the program by directly executing the `main` method in the `MainApp` class directly from within your IDE. Ensure your IDE is configured to use the JDK 18 and has the necessary dependencies in `build.gradle` installed.
 
-1. Clone this repository
-2. Remove the `.git` directory 
-3. Add the cloned directory structure to your local repo (if you already have one)
-4. Open the project with NetBeans
-5. Using NetBeans, build the project to resolve the dependencies
-6. Change the project name in `settings.gradle`
-7. Rename the default Java package in `MainApp.java` and `MainAppController.java`.
-8. Change the value of the `mainClass` class property in `build.gradle`. A fully-qualified name of the class containing the main method that you want to run must be supplied.
-
-## NetBeans
-
-This project template was tested with `NetBeans 17` and `JDK 18`.
+## License
+This project is licensed under the [MIT License](LICENSE)
