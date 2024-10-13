@@ -1,6 +1,10 @@
 # Space Invaders
 This project is a 2D shooter game, inspired by the classic 1978 _Space Invaders_, where players control a spaceship to destroy alien invaders. It is implemented using Open JavaFX 20 with FXML for the graphical interface. The game features multiple levels, each with increasing difficulty, and provides an interactive experience with sound effects, explosions, and various game assets.
 
+
+https://github.com/user-attachments/assets/041a40de-4a14-481b-a7b8-8cd9c1e79259
+
+
 ## Game Mechanics
 - **Objective**: Eliminate all alien invaders before they reach the bottom of the screen.
 - **Spaceship**: The spaceship moves freely in all directions and is controlled using the `WASD` keys. You start with 3 lives and lose a life when you get shot by an invader.
