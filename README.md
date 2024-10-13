@@ -2,10 +2,11 @@
 This project is a 2D shooter game, inspired by the classic 1978 _Space Invaders_, where players control a spaceship to destroy alien invaders. It is implemented using Open JavaFX 20 with FXML for the graphical interface. The game features multiple levels, each with increasing difficulty, and provides an interactive experience with sound effects, explosions, and various game assets.
 
 ## Game Mechanics
-- **Spaceship Movement**: The spaceship moves freely in all directions and is controlled using the WASD keys. It initially spawns at the bottom center of the screen.
-- **Shooting and Rockets**: Players can fire rockets to eliminate invaders. The type of rocket can be changed by pressing a key. A sound effect is played whenever rockets are fired.
-- **Invader Spawning**: The game generates random invaders with different 2D sprites. The first level starts with at least 15 invaders. Their speed and number increase as the player progresses through levels.
-- **Game Over Conditions**: The game ends when all aliens are eliminated or when the spaceship is hit by invaders three times. A congratulation screen is displayed when the player wins.
+- **Objective**: Eliminate all alien invaders before they reach the bottom of the screen.
+- **Spaceship**: The spaceship moves freely in all directions and is controlled using the `WASD` keys. You start with 3 lives and lose a life when you get shot by an invader.
+- **Shooting and Rockets**: Players can fire rockets to eliminate invaders by pressing `SPACE`. The type of rocket can be changed by pressing a `R`. The number of rockets you shoot at once increases every level.
+- **Invaders**: The game generates invaders at the top of the screen that will slowly make their way to the bottom of the screen while shooting at you. Their speed and number increase as the player progresses through levels.
+- **Game Over**: The game ends when all aliens are eliminated on all 3 levels. You lose when an alien reaches the bottom of the screen, when you run out of lives, or when an invader touches your spaceship.
 
 ## Getting started
 ### Prerequisites
