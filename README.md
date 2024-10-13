@@ -40,5 +40,9 @@ Make sure Oracle OpenJDK 18 is properly configured in the `JAVA_HOME` environmen
 ### Using IDE
 You can run the program by directly executing the `main` method in the `MainApp` class directly from within your IDE. Ensure your IDE is configured to use the JDK 18 and has the necessary dependencies in `build.gradle` installed.
 
+## Assets
+Game assets including graphics and sound effects were found on [OpenGameArt](https://opengameart.org/)
+- "Assets for a Space Invader-like Game" by Clear_Code under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/), via [OpenGameArt](https://opengameart.org/content/assets-for-a-space-invader-like-game)
+- "Pixel Space Invaders" by jlunsec under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/), via [OpenGameArt](https://opengameart.org/content/pixel-space-invaders)
 ## License
-This project is licensed under the [MIT License](LICENSE)
+This project is licensed under the [MIT License](LICENSE). 
