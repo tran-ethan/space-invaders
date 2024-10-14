@@ -38,7 +38,7 @@ Make sure Oracle OpenJDK 18 is properly configured in the `JAVA_HOME` environmen
 ```
 
 ### Using IDE
-You can run the program by directly executing the `main` method in the `MainApp` class directly from within your IDE. Ensure your IDE is configured to use the JDK 18 and has the necessary dependencies in `build.gradle` installed.
+You can run the program by directly executing the `main` method in the `SpaceInvadersApp` class directly from within your IDE. Ensure your IDE is configured to use the JDK 18 and has the necessary dependencies in `build.gradle` installed.
 
 ## Assets
 Game assets including graphics and sound effects were found on [OpenGameArt](https://opengameart.org/)
